@@ -1,11 +1,27 @@
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import "./App.css";
 import { RootState } from "./app/store";
 import ReservationCard from "./components/ReservationCard";
+import CustomerCard from "./components/CustomerCard";
+import { addReservation } from "./features/reservationSlice";
 
 function App() {
-  const reservations = useSelector((state: RootState) => state.reservations.value);
+  const [reservationName, setReservationName] = useState("");
+  const reservations = useSelector(
+    (state: RootState) => state.reservations.value
+  );
+  const customers = useSelector((state: RootState) => state.customers.value);
+  const dispatch = useDispatch();
+
+  const handleAddReservation = () => {
+    if (!reservationName) {
+      return reservationName;
+    }
+
+    dispatch(addReservation(reservationName));
+    setReservationName("");
+  };
   return (
     <div className="App">
       <div className="container">
@@ -13,26 +29,27 @@ function App() {
           <div>
             <h5 className="reservation-header">Reservations</h5>
             <div className="reservation-cards-container">
-              {reservations.map(name => <ReservationCard name={name}/>
-                )}
+              {reservations.map((name) => (
+                <ReservationCard name={name} />
+              ))}
             </div>
           </div>
           <div className="reservation-input-container">
-            <input />
-            <button>Add</button>
+            <input
+              value={reservationName}
+              onChange={(event) => setReservationName(event.target.value)}
+            />
+            <button onClick={handleAddReservation}>Add</button>
           </div>
         </div>
         <div className="customer-food-container">
-          <div className="customer-food-card-container">
-            <p>Selena Gomez</p>
-            <div className="customer-foods-container">
-              <div className="customer-food"></div>
-              <div className="customer-food-input-container">
-                <input />
-                <button>Add</button>
-              </div>
-            </div>
-          </div>
+          {customers.map((customer) => (
+            <CustomerCard
+              id={customer.id}
+              name={customer.name}
+              food={customer.food}
+            />
+          ))}
         </div>
       </div>
     </div>
